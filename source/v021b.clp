@@ -30,6 +30,7 @@
 	(new-input yes)
 	(new-init-input yes)
 	(next-restaurant-count 1)
+	(max-score 5)
 )
 
 
@@ -61,6 +62,20 @@
 
 (deffunction find-distance (?x1 ?y1 ?x2 ?y2)
 	(sqrt (+ (** (- ?y2 ?y1) 2) (** (- ?x2 ?x1) 2)))
+)
+
+(deffunction check-ranking (?r1 ?r2 ?d1 ?d2)
+	(if (> ?r1 ?r2 ) then TRUE
+	else 
+		(if (eq ?r1 ?r2) then (<= ?d1 ?d2) else FALSE)
+	)
+)
+
+(deffunction rating-to-words (?rating ?max-score)
+	(if (>= ?rating ?max-score) then "Very Recommended"
+	else (if (>= ?rating (- ?max-score 2)) then "Recommended"
+			else "Not Recommended"
+	))
 )
 
 ; ==================================================================
@@ -101,6 +116,7 @@
 )
 
 (defrule start-input
+	(new-input yes)
 =>
 	(printout t "Insert name" crlf)
 	(printout t "> ")
@@ -340,4 +356,54 @@
 	(retract ?f2)
 	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
 	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))	
+)
+
+(defrule print-top-10
+	(max-score ?max-score)
+	?f1 <- (restaurant-score ?name1 score ?r1 distance ?d1 rank 1)
+	?f2 <- (restaurant-score ?name2 score ?r2 distance ?d2 rank 2)
+	?f3 <- (restaurant-score ?name3 score ?r3 distance ?d3 rank 3)
+	?f4 <- (restaurant-score ?name4 score ?r4 distance ?d4 rank 4)
+	?f5 <- (restaurant-score ?name5 score ?r5 distance ?d5 rank 5)
+	?f6 <- (restaurant-score ?name6 score ?r6 distance ?d6 rank 6)
+	?f7 <- (restaurant-score ?name7 score ?r7 distance ?d7 rank 7)
+	?f8 <- (restaurant-score ?name8 score ?r8 distance ?d8 rank 8)
+	?f9 <- (restaurant-score ?name9 score ?r9 distance ?d9 rank 9)
+	?f10 <- (restaurant-score ?name10 score ?r10 distance ?d10 rank 10)
+
+	(test (and 
+				(check-ranking ?r1 ?r2 ?d1 ?d2)
+				(check-ranking ?r2 ?r3 ?d2 ?d3)
+				(check-ranking ?r3 ?r4 ?d3 ?d4)
+				(check-ranking ?r4 ?r5 ?d4 ?d5)
+				(check-ranking ?r5 ?r6 ?d5 ?d6)
+				(check-ranking ?r6 ?r7 ?d6 ?d7)
+				(check-ranking ?r7 ?r8 ?d7 ?d8)
+				(check-ranking ?r8 ?r9 ?d8 ?d9)
+				(check-ranking ?r9 ?r10 ?d9 ?d10)
+	))
+=>
+	(format t " No. | %-16s | %-12s | %-6s%n" Rating Name Distance)
+	(format t "------------------------------------------------------------%n")
+	(format t "  1  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r1 ?max-score) ?name1 ?d1)
+	(format t "  2  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r2 ?max-score) ?name2 ?d2)
+	(format t "  3  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r3 ?max-score) ?name3 ?d3)
+	(format t "  4  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r4 ?max-score) ?name4 ?d4)
+	(format t "  5  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r5 ?max-score) ?name5 ?d5)
+	(format t "  6  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r6 ?max-score) ?name6 ?d6)
+	(format t "  7  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r7 ?max-score) ?name7 ?d7)
+	(format t "  8  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r8 ?max-score) ?name8 ?d8)
+	(format t "  9  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r9 ?max-score) ?name9 ?d9)
+	(format t " 10  | %-16s | %-12s | %-6.3f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?d10)
+
+	(retract ?f1)
+	(retract ?f2)
+	(retract ?f3)
+	(retract ?f4)
+	(retract ?f5)
+	(retract ?f6)
+	(retract ?f7)
+	(retract ?f8)
+	(retract ?f9)
+	(retract ?f10)
 )
