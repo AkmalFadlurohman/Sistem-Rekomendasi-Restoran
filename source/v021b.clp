@@ -313,7 +313,7 @@
 
 (defrule checkCompatibility-minBudget
 	?f1 <- (restaurant (name ?name) (att min-budget) (val ?min))
-	(user-input (att min-budget) (val ?val))
+	(user-input (att min-budget) (val ?val&~-))
 	(test (>= ?val ?min))
 	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
 =>
@@ -324,7 +324,7 @@
 
 (defrule checkCompatibility-maxBudget
 	?f1 <- (restaurant (name ?name) (att max-budget) (val ?max))
-	(user-input (att max-budget) (val ?val))
+	(user-input (att max-budget) (val ?val&~-))
 	(test (>= ?val ?max))
 	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
 =>
@@ -356,6 +356,58 @@
 	(retract ?f2)
 	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
 	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))	
+)
+
+(defrule wifi-reposition
+	(max-score ?max)
+	(restaurant-data (name ?name1) (wifi no))
+	(restaurant-data (name ?name2) (wifi yes))
+	?f1 <- (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank1)
+	?f2 <- (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank2)
+	(test (< ?score1 ?max))
+	(test (eq ?score1 ?score2))
+	(test (eq ?d1 ?d2))
+	(test (< ?rank1 ?rank2))
+=>
+	(retract ?f1)
+	(retract ?f2)
+	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
+	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))
+)
+
+(defrule price-reposition
+	(max-score ?max)
+	(restaurant-data (name ?name1) (wifi ?wifi)(min-budget ?minR1))
+	(restaurant-data (name ?name2) (wifi ?wifi)(min-budget ?minR2))
+	?f1 <- (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank1)
+	?f2 <- (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank2)
+	(test (< ?score1 ?max))
+	(test (eq ?score1 ?score2))
+	(test (eq ?d1 ?d2))
+	(test (< ?minR2 ?minR1))
+	(test (< ?rank1 ?rank2))
+=>
+	(retract ?f1)
+	(retract ?f2)
+	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
+	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))
+)
+
+(defrule smoke-reposition
+	(max-score ?max)
+	(restaurant-data (name ?name1) (wifi ?wifi) (min-budget ?minR) (smoke yes))
+	(restaurant-data (name ?name2) (wifi ?wifi) (min-budget ?minR) (smoke no))
+	?f1 <- (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank1)
+	?f2 <- (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank2)
+	(test (< ?score1 ?max))
+	(test (eq ?score1 ?score2))
+	(test (eq ?d1 ?d2))
+	(test (< ?rank1 ?rank2))
+=>
+	(retract ?f1)
+	(retract ?f2)
+	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
+	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))
 )
 
 (defrule print-top-10
@@ -396,14 +448,14 @@
 	(format t "  9  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r9 ?max-score) ?name9 ?d9)
 	(format t " 10  | %-16s | %-12s | %-6.3f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?d10)
 
-	(retract ?f1)
-	(retract ?f2)
-	(retract ?f3)
-	(retract ?f4)
-	(retract ?f5)
-	(retract ?f6)
-	(retract ?f7)
-	(retract ?f8)
-	(retract ?f9)
-	(retract ?f10)
+	;(retract ?f1)
+	;(retract ?f2)
+	;(retract ?f3)
+	;(retract ?f4)
+	;(retract ?f5)
+	;(retract ?f6)
+	;(retract ?f7)
+	;(retract ?f8)
+	;(retract ?f9)
+	;(retract ?f10)
 )
