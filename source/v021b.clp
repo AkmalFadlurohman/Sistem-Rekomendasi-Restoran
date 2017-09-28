@@ -411,6 +411,7 @@
 )
 
 (defrule print-top-10
+	(declare (salience -1))
 	(max-score ?max-score)
 	?f1 <- (restaurant-score ?name1 score ?r1 distance ?d1 rank 1)
 	?f2 <- (restaurant-score ?name2 score ?r2 distance ?d2 rank 2)
