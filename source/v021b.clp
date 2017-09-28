@@ -332,11 +332,12 @@
 =>
 	(retract ?f1)
 	(retract ?f2)
-	(retract ?f3)
 	(if (and (<= ?maxU ?maxR) (>= ?maxU ?minR))
 	then (assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))
+		(retract ?f3)
 	else (if (>= ?maxU ?maxR)
-	then (assert (restaurant-score ?name score (+ ?score 2) distance ?d rank ?r))))
+	then (assert (restaurant-score ?name score (+ ?score 2) distance ?d rank ?r))
+		(retract ?f3)))
 )
 
 (defrule normal-score-reposition
