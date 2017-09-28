@@ -135,11 +135,10 @@
 	(assert (user-input (att min-budget) (val ?min)))
 	(printout t crlf)
 	
-	(if (neq ?min -) then
 	(printout t "What's you maximum budget? (0 - 9999, greater than minimum)" crlf)
 	(printout t "> ")
 	(assert (user-input (att max-budget) (val (read))))
-	(printout t crlf))
+	(printout t crlf)
 
 	(printout t "What's your dresscode preference? (casual / informal / formal / -)" crlf)
 	(printout t "> ")
@@ -193,14 +192,13 @@
 )
 
 (defrule badType-max
-	(user-input (att min-budget) (val ?min&~-))
-	?f1 <- (user-input (att max-budget) (val ?max))
+	?f1 <- (user-input (att max-budget) (val ?max&~-))
 	(test (not (numberp ?max)))
 =>
 	(retract ?f1)
 	(printout t "Reinput maximum budget (you entered '" ?max "' for maximum)" crlf)
 	(printout t "> ")
-	(assert(user-input (att max-budget) (val read)))
+	(assert(user-input (att max-budget) (val (read))))
 )
 
 (defrule outOfBound-max
@@ -301,9 +299,30 @@
 	(assert (user-input (att longitude) (val 0)))
 )
 
+(defrule convertEmptyMinBudget
+	?f1 <- (user-input (att min-budget) (val -))
+=>
+	(retract ?f1)
+	(assert (user-input (att min-budget) (val 0)))
+)
+
+<<<<<<< HEAD
+(defrule convertEmptyMaxBudget
+	?f1 <- (user-input (att max-budget) (val -))
+=>
+	(retract ?f1)
+	(assert (user-input (att max-budget) (val 9999)))
+)
+
 (defrule checkCompatibility
 	?f1 <- (restaurant (name ?name) (att ?att1&~min-budget&~max-budget&~latitude&~longitude) (val ?val))
 	(user-input (att ?att2&?att1) (val ?val))
+=======
+(defrule checkCompatibility-minBudget
+	?f1 <- (restaurant (name ?name) (att min-budget) (val ?min))
+	(user-input (att min-budget) (val ?val&~-))
+	(test (>= ?val ?min))
+>>>>>>> cb731d85e6de16639e577fcaa75b3b6958f2cd9d
 	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
 =>
 	(retract ?f1)
@@ -311,26 +330,28 @@
 	(assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))
 )
 
-(defrule checkCompatibility-minBudget
-	?f1 <- (restaurant (name ?name) (att min-budget) (val ?min))
-	(user-input (att min-budget) (val ?val&~-))
-	(test (>= ?val ?min))
-	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
-=>
-	(retract ?f1)
-	(retract ?f2)
-	(assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))	
-)
-
+<<<<<<< HEAD
+(defrule checkCompatibilityBudget-1
+	?f1 <- (restaurant (name ?name) (att max-budget) (val ?maxR))
+	?f2 <- (restaurant (name ?name) (att min-budget) (val ?minR))
+	?f3 <- (restaurant-score ?name score ?score distance ?d rank ?r)
+	(user-input (att max-budget) (val ?maxU))
+	(test (numberp ?maxU))
+=======
 (defrule checkCompatibility-maxBudget
 	?f1 <- (restaurant (name ?name) (att max-budget) (val ?max))
 	(user-input (att max-budget) (val ?val&~-))
 	(test (>= ?val ?max))
 	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
+>>>>>>> cb731d85e6de16639e577fcaa75b3b6958f2cd9d
 =>
 	(retract ?f1)
 	(retract ?f2)
-	(assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))	
+	(retract ?f3)
+	(if (and (<= ?maxU ?maxR) (>= ?maxU ?minR))
+	then (assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))
+	else (if (>= ?maxU ?maxR)
+	then (assert (restaurant-score ?name score (+ ?score 2) distance ?d rank ?r))))
 )
 
 (defrule normal-score-reposition
@@ -449,14 +470,14 @@
 	(format t "  9  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r9 ?max-score) ?name9 ?d9)
 	(format t " 10  | %-16s | %-12s | %-6.3f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?d10)
 
-	;(retract ?f1)
-	;(retract ?f2)
-	;(retract ?f3)
-	;(retract ?f4)
-	;(retract ?f5)
-	;(retract ?f6)
-	;(retract ?f7)
-	;(retract ?f8)
-	;(retract ?f9)
-	;(retract ?f10)
+	(retract ?f1)
+	(retract ?f2)
+	(retract ?f3)
+	(retract ?f4)
+	(retract ?f5)
+	(retract ?f6)
+	(retract ?f7)
+	(retract ?f8)
+	(retract ?f9)
+	(retract ?f10)
 )
