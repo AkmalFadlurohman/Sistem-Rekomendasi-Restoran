@@ -306,7 +306,6 @@
 	(assert (user-input (att min-budget) (val 0)))
 )
 
-<<<<<<< HEAD
 (defrule convertEmptyMaxBudget
 	?f1 <- (user-input (att max-budget) (val -))
 =>
@@ -317,12 +316,6 @@
 (defrule checkCompatibility
 	?f1 <- (restaurant (name ?name) (att ?att1&~min-budget&~max-budget&~latitude&~longitude) (val ?val))
 	(user-input (att ?att2&?att1) (val ?val))
-=======
-(defrule checkCompatibility-minBudget
-	?f1 <- (restaurant (name ?name) (att min-budget) (val ?min))
-	(user-input (att min-budget) (val ?val&~-))
-	(test (>= ?val ?min))
->>>>>>> cb731d85e6de16639e577fcaa75b3b6958f2cd9d
 	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
 =>
 	(retract ?f1)
@@ -330,20 +323,12 @@
 	(assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))
 )
 
-<<<<<<< HEAD
 (defrule checkCompatibilityBudget-1
 	?f1 <- (restaurant (name ?name) (att max-budget) (val ?maxR))
 	?f2 <- (restaurant (name ?name) (att min-budget) (val ?minR))
 	?f3 <- (restaurant-score ?name score ?score distance ?d rank ?r)
 	(user-input (att max-budget) (val ?maxU))
 	(test (numberp ?maxU))
-=======
-(defrule checkCompatibility-maxBudget
-	?f1 <- (restaurant (name ?name) (att max-budget) (val ?max))
-	(user-input (att max-budget) (val ?val&~-))
-	(test (>= ?val ?max))
-	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
->>>>>>> cb731d85e6de16639e577fcaa75b3b6958f2cd9d
 =>
 	(retract ?f1)
 	(retract ?f2)
