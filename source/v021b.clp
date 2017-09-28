@@ -35,25 +35,33 @@
 
 
 (deffacts restaurants-data
-	(restaurant-data (name "Restaurant A") (smoke yes) (min-budget 1000) (max-budget 2000) (dresscode casual) (wifi yes) (latitude -6.8922186) (longitude 107.5886173))
-
-	(restaurant-data (name "Restaurant B") (smoke no) (min-budget 1200) (max-budget 2500) (dresscode informal) (wifi yes) (latitude -6.224085) (longitude 106.7859815))
-
-	(restaurant-data (name "Restaurant C") (smoke yes) (min-budget 2000) (max-budget 4000) (dresscode formal) (wifi no) (latitude -6.2145285) (longitude 106.8642591))
-
-	(restaurant-data (name "Restaurant D") (smoke no) (min-budget 500) (max-budget 1400) (dresscode formal) (wifi no) (latitude -6.9005363) (longitude 107.6222191))
-
-	(restaurant-data (name "Restaurant E") (smoke yes) (min-budget 1000) (max-budget 2000) (dresscode casual informal) (wifi yes) (latitude -6.2055617) (longitude 106.8001591))
-
-	(restaurant-data (name "Restaurant F") (smoke no) (min-budget 2500) (max-budget 5000) (dresscode informal) (wifi yes) (latitude -6.9045679) (longitude 107.6399745))
-
-	(restaurant-data (name "Restaurant G") (smoke yes) (min-budget 1300) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 106.7844409))
-
-	(restaurant-data (name "Restaurant H") (smoke no) (min-budget 400) (max-budget 1000) (dresscode informal) (wifi no) (latitude -6.9525133) (longitude 107.6052906))
-
-	(restaurant-data (name "Restaurant I") (smoke no) (min-budget 750) (max-budget 2200) (dresscode casual informal) (wifi yes) (latitude -6.9586985) (longitude 107.7092282))
-
-	(restaurant-data (name "Restaurant J") (smoke yes) (min-budget 1500) (max-budget 2000) (dresscode casual) (wifi yes) (latitude -6.2769732) (longitude 106.775133))
+    (restaurant-data (name "Restaurant A") (smoke yes) (min-budget 1000) (max-budget 2000) (dresscode casual) (wifi yes) (latitude -6.8922186) (longitude 107.5886173))
+    
+    (restaurant-data (name "Restaurant B") (smoke no) (min-budget 1200) (max-budget 2500) (dresscode informal) (wifi yes) (latitude -6.224085) (longitude 106.7859815))
+    
+    (restaurant-data (name "Restaurant C") (smoke yes) (min-budget 2000) (max-budget 4000) (dresscode formal) (wifi no) (latitude -6.2145285) (longitude 106.8642591))
+    
+    (restaurant-data (name "Restaurant D") (smoke no) (min-budget 500) (max-budget 1400) (dresscode formal) (wifi no) (latitude -6.9005363) (longitude 107.6222191))
+    
+    (restaurant-data (name "Restaurant E") (smoke yes) (min-budget 1000) (max-budget 2000) (dresscode casual informal) (wifi yes) (latitude -6.2055617) (longitude 106.8001591))
+    
+    (restaurant-data (name "Restaurant F") (smoke no) (min-budget 2500) (max-budget 5000) (dresscode informal) (wifi yes) (latitude -6.9045679) (longitude 107.6399745))
+    
+    (restaurant-data (name "Restaurant G") (smoke yes) (min-budget 1300) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 106.7844409))
+    
+    (restaurant-data (name "Restaurant K") (smoke yes) (min-budget 1400) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 106.7844410))
+    
+    ;(restaurant-data (name "Restaurant L") (smoke yes) (min-budget 1400) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 108.3927937));
+    
+    (restaurant-data (name "Restaurant L") (smoke yes) (min-budget 1400) (max-budget 3000) (dresscode casual) (wifi no) (latitude -6.1881082) (longitude 108.3927938))
+    
+    (restaurant-data (name "Restaurant H") (smoke no) (min-budget 400) (max-budget 1000) (dresscode informal) (wifi no) (latitude -6.9525133) (longitude 107.6052906))
+    
+    (restaurant-data (name "Restaurant I") (smoke no) (min-budget 750) (max-budget 2200) (dresscode casual informal) (wifi yes) (latitude -6.9586985) (longitude 107.7092282))
+    
+    (restaurant-data (name "Restaurant J") (smoke yes) (min-budget 1500) (max-budget 2000) (dresscode casual) (wifi yes) (latitude -6.2769732) (longitude 106.775133))
+    
+    
 )
 
 ; ==================================================================
@@ -442,18 +450,18 @@
 				(check-ranking ?r9 ?r10 ?d9 ?d10)
 	))
 =>
-	(format t " No. | %-16s | %-12s | %-6s%n" Rating Name Distance)
-	(format t "------------------------------------------------------------%n")
-	(format t "  1  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r1 ?max-score) ?name1 ?d1)
-	(format t "  2  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r2 ?max-score) ?name2 ?d2)
-	(format t "  3  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r3 ?max-score) ?name3 ?d3)
-	(format t "  4  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r4 ?max-score) ?name4 ?d4)
-	(format t "  5  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r5 ?max-score) ?name5 ?d5)
-	(format t "  6  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r6 ?max-score) ?name6 ?d6)
-	(format t "  7  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r7 ?max-score) ?name7 ?d7)
-	(format t "  8  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r8 ?max-score) ?name8 ?d8)
-	(format t "  9  | %-16s | %-12s | %-6.3f%n" (rating-to-words ?r9 ?max-score) ?name9 ?d9)
-	(format t " 10  | %-16s | %-12s | %-6.3f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?d10)
+    (format t " No. | %-16s | %-12s | %-6s | %-6s%n" Rating Name Distance Score)
+    (format t "---------------------------------------------------------------------%n")
+    (format t "  1  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r1 ?max-score) ?name1 ?d1 ?r1)
+    (format t "  2  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r2 ?max-score) ?name2 ?d2 ?r2)
+    (format t "  3  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r3 ?max-score) ?name3 ?d3 ?r3)
+    (format t "  4  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r4 ?max-score) ?name4 ?d4 ?r4)
+    (format t "  5  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r5 ?max-score) ?name5 ?d5 ?r5)
+    (format t "  6  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r6 ?max-score) ?name6 ?d6 ?r6)
+    (format t "  7  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r7 ?max-score) ?name7 ?d7 ?r7)
+    (format t "  8  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r8 ?max-score) ?name8 ?d8 ?r8)
+    (format t "  9  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r9 ?max-score) ?name9 ?d9 ?r9)
+    (format t " 10  | %-16s | %-12s | %-6.3f   | %-1.1f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?d10 ?r10)
 
 	(retract ?f1)
 	(retract ?f2)
