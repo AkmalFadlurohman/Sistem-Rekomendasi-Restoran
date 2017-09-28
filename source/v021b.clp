@@ -37,6 +37,8 @@
 (deffacts restaurants-data
 	(restaurant-data (name "Restaurant A") (smoke yes) (min-budget 1000) (max-budget 2000) (dresscode casual) (wifi yes) (latitude -6.8922186) (longitude 107.5886173))
 
+	(restaurant-data (name "Restaurant K") (smoke yes) (min-budget 900) (max-budget 2000) (dresscode casual) (wifi yes) (latitude -6.8922186) (longitude 107.5886173))
+
 	(restaurant-data (name "Restaurant B") (smoke no) (min-budget 1200) (max-budget 2500) (dresscode informal) (wifi yes) (latitude -6.224085) (longitude 106.7859815))
 
 	(restaurant-data (name "Restaurant C") (smoke yes) (min-budget 2000) (max-budget 4000) (dresscode formal) (wifi no) (latitude -6.2145285) (longitude 106.8642591))
@@ -384,12 +386,10 @@
 )
 
 (defrule price-reposition
-	(max-score ?max)
-	(restaurant-data (name ?name1) (wifi ?wifi)(min-budget ?minR1))
-	(restaurant-data (name ?name2) (wifi ?wifi)(min-budget ?minR2))
+	(restaurant-data (name ?name1) (min-budget ?minR1) (wifi ?wifi))
+	(restaurant-data (name ?name2) (min-budget ?minR2) (wifi ?wifi))
 	?f1 <- (restaurant-score ?name1 score ?score distance ?d rank ?rank1)
 	?f2 <- (restaurant-score ?name2 score ?score distance ?d rank ?rank2)
-	(test (< ?score ?max))
 	(test (< ?minR2 ?minR1))
 	(test (< ?rank1 ?rank2))
 =>
