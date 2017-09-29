@@ -47,9 +47,9 @@
     
     (restaurant-data (name "Restaurant F") (smoke no) (min-budget 2500) (max-budget 5000) (dresscode informal) (wifi yes) (latitude -6.9045679) (longitude 107.6399745))
     
-    (restaurant-data (name "Restaurant G") (smoke yes) (min-budget 1400) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 106.7844409))
+    (restaurant-data (name "Restaurant G") (smoke no) (min-budget 1400) (max-budget 3000) (dresscode informal) (wifi yes) (latitude -6.1881082) (longitude 106.7844409))
     
-    (restaurant-data (name "Restaurant K") (smoke yes) (min-budget 1300) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 106.7844409))
+    (restaurant-data (name "Restaurant K") (smoke no) (min-budget 1400) (max-budget 3000) (dresscode informal casual) (wifi yes) (latitude -6.1881082) (longitude 106.7844409))
     
     ;(restaurant-data (name "Restaurant L") (smoke yes) (min-budget 1400) (max-budget 3000) (dresscode casual) (wifi yes) (latitude -6.1881082) (longitude 108.3927937));
     
@@ -284,12 +284,12 @@
 	(assert (user-input (att wifi) (val yes)))
 )
 
-(defrule convertEmptyDresscode
-	?f1 <- (user-input (att dresscode) (val -))
-=>
-	(retract ?f1)
-	(assert (user-input (att dresscode) (val casual)))
-)
+;(defrule convertEmptyDresscode
+;	?f1 <- (user-input (att dresscode) (val -))
+;=>
+;	(retract ?f1)
+;	(assert (user-input (att dresscode) (val casual)))
+;)
 
 (defrule convertEmptyLatitude
 	?f1 <- (user-input (att latitude) (val -))
@@ -320,9 +320,30 @@
 )
 
 (defrule checkCompatibility
-	?f1 <- (restaurant (name ?name) (att ?att1&~min-budget&~max-budget&~latitude&~longitude) (val $?valRes))
+	?f1 <- (restaurant (name ?name) (att ?att1&~min-budget&~max-budget&~latitude&~longitude&~dresscode) (val $?valRes))
 	(user-input (att ?att2&?att1) (val ?val))
 	(test (member ?val ?valRes))
+	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
+=>
+	(retract ?f1)
+	(retract ?f2)
+	(assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))
+)
+
+(defrule checkCompatibility-dresscode
+	?f1 <- (restaurant (name ?name) (att dresscode) (val $?valRes))
+	(user-input (att dresscode) (val ?val))
+	(test (member ?val ?valRes))
+	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
+=>
+	(retract ?f1)
+	(retract ?f2)
+	(assert (restaurant-score ?name score (+ ?score 1) distance ?d rank ?r))
+)
+
+(defrule checkCompatibility-dresscode-empty
+	?f1 <- (restaurant (name ?name) (att dresscode) (val $?valRes))
+	(user-input (att dresscode) (val -))
 	?f2 <- (restaurant-score ?name score ?score distance ?d rank ?r)
 =>
 	(retract ?f1)
@@ -406,6 +427,7 @@
 )
 
 (defrule dresscode-casual-reposition
+	(user-input (att dresscode) (val -))
 	(restaurant-data (name ?name1) (min-budget ?minR1) (wifi ?wifi) (dresscode $?dress1))
 	(restaurant-data (name ?name2) (min-budget ?minR2) (wifi ?wifi) (dresscode $?dress2))
 	?f1 <- (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank1)
@@ -423,6 +445,7 @@
 )
 
 (defrule dresscode-informal-reposition
+	(user-input (att dresscode) (val -))
 	(restaurant-data (name ?name1) (min-budget ?minR1) (wifi ?wifi) (dresscode $?dress1))
 	(restaurant-data (name ?name2) (min-budget ?minR2) (wifi ?wifi) (dresscode $?dress2))
 	?f1 <- (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank1)
@@ -438,23 +461,6 @@
 	(retract ?f2)
 	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
 	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))	
-)
-
-(defrule smoke-reposition
-	(max-score ?max)
-	(restaurant-data (name ?name1) (wifi ?wifi) (min-budget ?minR) (smoke yes))
-	(restaurant-data (name ?name2) (wifi ?wifi) (min-budget ?minR) (smoke no))
-	?f1 <- (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank1)
-	?f2 <- (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank2)
-	(test (< ?score1 ?max))
-	(test (eq ?score1 ?score2))
-	(test (eq ?d1 ?d2))
-	(test (< ?rank1 ?rank2))
-=>
-	(retract ?f1)
-	(retract ?f2)
-	(assert (restaurant-score ?name1 score ?score1 distance ?d1 rank ?rank2))
-	(assert (restaurant-score ?name2 score ?score2 distance ?d2 rank ?rank1))
 )
 
 (defrule print-top-10
@@ -483,18 +489,18 @@
 				(check-ranking ?r9 ?r10 ?d9 ?d10)
 	))
 =>
-    (format t " No. | %-16s | %-12s | %-6s | %-6s%n" Rating Name Distance Score)
+    (format t " No. | %-16s | %-12s | %-5s | %-6s%n" Rating Name  Score Distance)
     (format t "---------------------------------------------------------------------%n")
-    (format t "  1  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r1 ?max-score) ?name1 ?d1 ?r1)
-    (format t "  2  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r2 ?max-score) ?name2 ?d2 ?r2)
-    (format t "  3  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r3 ?max-score) ?name3 ?d3 ?r3)
-    (format t "  4  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r4 ?max-score) ?name4 ?d4 ?r4)
-    (format t "  5  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r5 ?max-score) ?name5 ?d5 ?r5)
-    (format t "  6  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r6 ?max-score) ?name6 ?d6 ?r6)
-    (format t "  7  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r7 ?max-score) ?name7 ?d7 ?r7)
-    (format t "  8  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r8 ?max-score) ?name8 ?d8 ?r8)
-    (format t "  9  | %-16s | %-12s | %-6.3f   | %-1.1f%n" (rating-to-words ?r9 ?max-score) ?name9 ?d9 ?r9)
-    (format t " 10  | %-16s | %-12s | %-6.3f   | %-1.1f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?d10 ?r10)
+    (format t "  1  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r1 ?max-score) ?name1 ?r1 ?d1)
+    (format t "  2  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r2 ?max-score) ?name2 ?r2 ?d2)
+    (format t "  3  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r3 ?max-score) ?name3 ?r3 ?d3)
+    (format t "  4  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r4 ?max-score) ?name4 ?r4 ?d4)
+    (format t "  5  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r5 ?max-score) ?name5 ?r5 ?d5)
+    (format t "  6  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r6 ?max-score) ?name6 ?r6 ?d6)
+    (format t "  7  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r7 ?max-score) ?name7 ?r7 ?d7)
+    (format t "  8  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r8 ?max-score) ?name8 ?r8 ?d8)
+    (format t "  9  | %-16s | %-12s | %3.0f   | %-6.3f%n" (rating-to-words ?r9 ?max-score) ?name9 ?r9 ?d9)
+    (format t " 10  | %-16s | %-12s | %3.0f   | %-6.3f%n%n" (rating-to-words ?r10 ?max-score) ?name10 ?r10 ?d10)
 
 	(retract ?f1)
 	(retract ?f2)
